@@ -1,6 +1,25 @@
 var net = require('net');
 var readline = require('readline');
 var os = require('os');
+
+//======= read file ========//
+var fs = require('fs');
+var path = require('path');
+var filePath = path.join(__dirname, 'config.json');
+//======= read file ========//
+
+
+//======= read file ========//
+function readConfig(){
+    fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
+    if (err){
+        console.log(err);
+    }
+    console.log(data);  
+});
+}
+//======= read file ========//
+
 //var q = require('q');
 
 rl = readline.createInterface({
@@ -8,16 +27,7 @@ rl = readline.createInterface({
     output: process.stdout
 });
 
-var config = {
-    DEBUG: true,
-    serverRunning: false,
-    connected: false,
-    remotePort: 1234,
-    localPort: 4321,
-    name: 'OHAI',
-    HOST: '127.0.0.1',
-    REMOTE: '127.0.0.1'
-}
+var config = readConfig();
 
 var re = /\d{4}/ // 4 digit regex matching
 var client = new net.Socket();
