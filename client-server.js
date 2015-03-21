@@ -128,9 +128,10 @@ rl.on('line', function(line) {
         break;
 
         case 'connect':
-        editPort('remote', function(res){
-            connect(res);
-        });
+        // editPort('remote', function(res){
+        //     connect(res);
+        // });
+        connect(config.remotePort);
         break;
 
         case 'disconnect':
@@ -141,9 +142,10 @@ rl.on('line', function(line) {
         var rs = line.split(" ");
 
         if(rs[0] == 'start' && (rs[1] =='server' || rs[1] == '-s')){
-            editPort('local', function(res){
-                startServer(res);
-            });
+            // editPort('local', function(res){
+            //     startServer(res);
+            // });
+            startServer(config.localPort);
         }
 
         if(config.connected){
