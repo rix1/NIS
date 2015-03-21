@@ -1,0 +1,9 @@
+{
+  "serverRunning": false,
+  "connected": false,
+  "remotePort": "4321",
+  "localPort": "1234",
+  "name": "OHAI",
+  "HOST": "169.254.193.97",
+  "REMOTE": "169.254.13.106"
+}

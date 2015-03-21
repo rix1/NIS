@@ -1,0 +1,9 @@
+{
+  "serverRunning": false,
+  "connected": false,
+  "remotePort": "4321",
+  "localPort": "1234",
+  "name": "Bob",
+  "HOST": "127.0.0.1",
+  "REMOTE": "127.0.0.1"
+}

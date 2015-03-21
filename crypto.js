@@ -14,8 +14,7 @@ function getPassword(){
   //return Kas for A, Na 
   //return Kbs for B, Nb
   //return Kab for A and B
-
-}    
+}
 
 function encrypt(text){
   var cipher = crypto.createCipher(algorithm,password)
