@@ -1,6 +1,38 @@
 var net = require('net');
 var readline = require('readline');
 var os = require('os');
+//====== Encryption and decryption ======//
+
+var crypto = require('./crypto');
+
+//====== Encryption and decryption ======//
+
+
+//======= read file ========//
+var fs = require('fs');
+var path = require('path');
+var filePath = path.join(__dirname, 'config.json');
+//======= read file ========//
+
+
+//======= read file ========//
+var config;
+
+function setConfig(config1){
+    config = config1;
+}
+
+function getConfig(callback){
+    fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
+        if (err){
+            console.log(err);
+        }
+    //console.log(data);
+    callback(data);
+});
+}
+//======= read file ========//
+
 //var q = require('q');
 
 rl = readline.createInterface({
@@ -8,20 +40,21 @@ rl = readline.createInterface({
     output: process.stdout
 });
 
-var config = {
-    DEBUG: true,
-    serverRunning: false,
-    connected: false,
-    remotePort: 1234,
-    localPort: 4321,
-    name: 'OHAI',
-    HOST: '169.254.254.185',
-    REMOTE: '127.0.0.1'
+// ============= PROGRAM FLOW ============= //
+
+if(!started){
+    getConfig(setConfig);
+    // rl.question("Welcome to OHAIchat\nWhats your name?\n", function(answer){
+    //     setName(answer.trim()); // Sanitation?
+    // });
+    started = true;
 }
+
+
 
 var re = /\d{4}/ // 4 digit regex matching
 var client = new net.Socket();
-var started = true;
+var started = false;
 rl.prompt();
 
 
@@ -69,54 +102,46 @@ function editPort(flag, command){
         }
     })}
 
-// ============= PROGRAM FLOW ============= //
-
-if(!started){
-    rl.question("Welcome to OHAIchat\nWhats your name?\n", function(answer){
-        setName(answer.trim()); // Sanitation?
-    });
-    started = true;
-}
 
 rl.on('line', function(line) {
     switch(line.trim()) {
         case 'exit':
-            rl.close();
-            break;
+        rl.close();
+        break;
 
         case 'status':
-            console.log(config);
-            break;
+        console.log(config);
+        break;
 
         case 'help':
-            console.log();
-            break;
-  
+        console.log();
+        break;
+
         case 'connect':
-            editPort('remote', function(res){
-                connect(res);
-            });
-            break;
+        editPort('remote', function(res){
+            connect(res);
+        });
+        break;
 
         case 'disconnect':
-            disconnect();
-            break;
+        disconnect();
+        break;
 
         default:
-            var rs = line.split(" ");
+        var rs = line.split(" ");
 
-            if(rs[0] == 'start' && (rs[1] =='server' || rs[1] == '-s')){
-                editPort('local', function(res){
-                    startServer(res);
-                });
-            }
+        if(rs[0] == 'start' && (rs[1] =='server' || rs[1] == '-s')){
+            editPort('local', function(res){
+                startServer(res);
+            });
+        }
 
-            if(config.connected){
-                client.write(line);
-                break;
-            }else{
-                console.log('Echo aka you are offline: `' + line.trim() + '`');
-            }break;
+        if(config.connected){
+            client.write(crypto.encrypt(line));
+            break;
+        }else{
+            console.log('Echo aka you are offline: `' + line.trim() + '`');
+        }break;
     }
     rl.prompt();
 }).on('close', function() {
@@ -173,7 +198,8 @@ var server = net.createServer(function(client){
     client.write(" > " + config.name + ": Hi! We are connected!" );
 
     client.on('data', function(data){
-        console.log(data.toString());
+
+        console.log(crypto.decrypt(data.toString()));
     })
 });
 
