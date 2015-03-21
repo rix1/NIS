@@ -21,8 +21,6 @@ for (var i = 0; i < acceptedHosts.length; i++){
 	lookup[acceptedHosts[i].address] = acceptedHosts[i];
 }
 
-console.log();
-
 
 var server = net.createServer(function(client){
 	console.log('Request from: ' + client.address().address);

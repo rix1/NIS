@@ -12,6 +12,7 @@ var crypto = require('./crypto');
 var fs = require('fs');
 var path = require('path');
 var filePath = path.join(__dirname, 'config.json');
+
 //======= read file ========//
 
 
@@ -31,6 +32,15 @@ function getConfig(callback){
     callback(data);
 });
 }
+
+function saveConfig(callback){
+    fs.writeFile('config.json', config, function (err) {
+  if (err) throw err;
+  console.log('It\'s saved!');
+  callback(callback(0));
+});
+}
+
 //======= read file ========//
 
 //var q = require('q');
@@ -145,8 +155,8 @@ rl.on('line', function(line) {
     }
     rl.prompt();
 }).on('close', function() {
+    saveConfig(process.exit);
     console.log('Have a great day!');
-    process.exit(0); // Exit the program
 });
 
 
