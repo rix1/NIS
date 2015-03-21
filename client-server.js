@@ -157,6 +157,8 @@ rl.on('line', function(line) {
     }
     rl.prompt();
 }).on('close', function() {
+    disconnect();
+    stopServer();
     saveConfig(process.exit);
     console.log('Have a great day!');
 });
@@ -164,7 +166,7 @@ rl.on('line', function(line) {
 
 // '169.254.13.106'
 function connect(port){
-    config.remotePort = port;
+    //config.remotePort = port;
     console.log("Trying to connect to " + port);
     client.connect(port, config.REMOTE, function(){ // ConnectionListener
         console.log('Connected to server');
@@ -219,8 +221,14 @@ server.on('close', function(){
     logD(2, "Close event emitted.");
 })
 
+function stopServer(){
+    console.log("server stopped...");
+    config.serverRunning = false;
+}
+
 function disconnect(){
     console.log("Disconnected from remote client");
+    config.connected = false;
     client.end();
 }
 
