@@ -40,7 +40,6 @@ rl = readline.createInterface({
     output: process.stdout
 });
 
-
 // ============= PROGRAM FLOW ============= //
 
 if(!started){
@@ -209,7 +208,7 @@ server.on('close', function(){
 })
 
 function disconnect(){
-
+    console.log("Disconnected from remote client");
     client.end();
 }
 

@@ -1,64 +1,54 @@
 
-var str = "connect 1234";
-var str2 = "connect1234";
-var re = /^connect\s\d+$/
 
-console.log( re.test(str) );
-console.log( re.test(str2) );
+var acceptedHosts = [{
+    name: 'rikard',
+    address: '127.0.0.1',
+    port: '9999'
+},{ 
+    name: 'siri',
+    address: '1235.423',
+    port: '1324'
+}];
 
+var lookup = {};
 
-// var re = /\d{4}/
-
-// re.test(ans)
-
-
-// 	console.log('CONNECTED: ' + client.address().address);
-
-// 	client.on('end', function(){
-// 		console.log(client.address().address + ' disconnected.');
-// 	});
-
-// 	client.write('Welcome to very secure chat server');
-
-// 	client.on('data', function(data){
-// 		console.log(data.toString());
-// 		client.write('Hei, jeg har det bra. Jeg er ikke robot.');
-// 	});
-
-
-// test = true;
-
-// log("heisanN!")
-
-// function log(string){
-// 	if(test){
-// 		console.log(string);
-// 	}
-// }
-
-
-function returnFunction(string){
-    if(string == 'hei'){
-        return 'hade';
-    }else {
-        console.log('returnfunction');
-        return 'dust';
-    }
+for (var i = 0, len = acceptedHosts.length; i < len; i++) {
+    lookup[acceptedHosts[i].name] = acceptedHosts[i];
 }
 
 
-var usikker = returnFunction('frank');
+var a = 'rikard';
+var b = 'sdf';
+
+console.log(lookup[a]);
+
+if(!(typeof lookup[a] === "undefined")){
+    console.log("GRANBAR");
+}
 
 
-var connect = function(firstThing, seconThing){
-    console.log("1: inni connect!");
-    return "first: " + firstThing;
+// function returnFunction(string){
+//     if(string == 'hei'){
+//         return 'hade';
+//     }else {
+//         console.log('returnfunction');
+//         return 'dust';
+//     }
+// }
 
-    var now = function(){
-        return "second" + seconThing;
-    }
-};
 
-connect("første", "andre");
+// var usikker = returnFunction('frank');
 
-console.log(usikker);
+
+// var connect = function(firstThing, seconThing){
+//     console.log("1: inni connect!");
+//     return "first: " + firstThing;
+
+//     var now = function(){
+//         return "second" + seconThing;
+//     }
+// };
+
+// connect("første", "andre");
+
+// console.log(usikker);
