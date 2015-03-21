@@ -14,7 +14,9 @@ var config = {
     connected: false,
     remotePort: 1234,
     localPort: 4321,
-    name: 'OHAI'
+    name: 'OHAI',
+    HOST: '127.0.0.1',
+    REMOTE: '127.0.0.1'
 }
 
 var re = /\d{4}/ // 4 digit regex matching
@@ -89,6 +91,12 @@ rl.on('line', function(line) {
         case 'help':
             console.log();
             break;
+  
+        case 'connect':
+            editPort('remote', function(res){
+                connect(res);
+            });
+            break;
 
         case 'disconnect':
             disconnect();
@@ -101,16 +109,6 @@ rl.on('line', function(line) {
                 editPort('local', function(res){
                     startServer(res);
                 });
-            }
-            else if(rs[0] == 'connect'){
-                if(re.test(rs[1])){
-                    editPort('remote', function(res){
-                        connect(res);
-                    });
-                }else{
-                    logD()
-                }
-
             }
 
             if(config.connected){
@@ -127,10 +125,11 @@ rl.on('line', function(line) {
 });
 
 
+// '169.254.13.106'
 function connect(port){
     config.remotePort = port;
     console.log("Trying to connect to " + port);
-    client.connect(port, function(){ // ConnectionListener
+    client.connect(port, config.REMOTE, function(){ // ConnectionListener
         console.log('Connected to server');
         config.connected = true;
     });
@@ -190,10 +189,11 @@ function disconnect(){
 function startServer(port){
     config.serverRunning = true;
     config.localPort = port;
-    server.listen(port, function(){ // Viktig at denne porten er forskjellig!
+
+    server.listen(port, config.HOST, function(){ // Viktig at denne porten er forskjellig!
         if(server.address().address == '::'){
             console.log('Hostname: ' + os.hostname());
-            console.log('Server running on 127.0.0.1:' + server.address().port);
+            console.log('Server running on ' + config.HOST + ":" + server.address().port);
 
         }else {
             console.log('Server running on ' + server.address().address + ":" + server.address().port);
