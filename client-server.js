@@ -29,12 +29,12 @@ function getConfig(callback){
             console.log(err);
         }
     //console.log(data);
-    callback(data);
+    callback(JSON.parse(data));
 });
 }
 
 function saveConfig(callback){
-    fs.writeFile('config.json', config, function (err) {
+    fs.writeFile('config.json', JSON.stringify(config), function (err) {
   if (err) throw err;
   console.log('It\'s saved!');
   callback(callback(0));
@@ -131,7 +131,8 @@ rl.on('line', function(line) {
         // editPort('remote', function(res){
         //     connect(res);
         // });
-        connect(config.remotePort);
+        // connect(config.remotePort);
+        console.log(config.localPort);
         break;
 
         case 'disconnect':
@@ -233,6 +234,7 @@ function disconnect(){
 }
 
 function startServer(port){
+    console.log(port);
     config.serverRunning = true;
     config.localPort = port;
 
