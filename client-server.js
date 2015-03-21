@@ -15,7 +15,7 @@ var config = {
     remotePort: 1234,
     localPort: 4321,
     name: 'OHAI',
-    HOST: '127.0.0.1',
+    HOST: '169.254.254.185',
     REMOTE: '127.0.0.1'
 }
 
@@ -182,7 +182,7 @@ server.on('close', function(){
 })
 
 function disconnect(){
-
+    console.log("Disconnected from remote client");
     client.end();
 }
 
