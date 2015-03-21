@@ -5,6 +5,6 @@
     remotePort: 1234,
     localPort: 4321,
     name: 'OHAI',
-    HOST: '169.254.13.106',
-    REMOTE: '169.254.254.185'
+    HOST: '127.0.0.1',
+    REMOTE: '127.0.0.1'
 }
