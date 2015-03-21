@@ -11,7 +11,7 @@ var crypto = require('./crypto');
 //======= read file ========//
 var fs = require('fs');
 var path = require('path');
-var filePath = path.join(__dirname, 'config.json');
+var filePath = path.join(__dirname, 'test.json');
 
 //======= read file ========//
 
@@ -34,7 +34,7 @@ function getConfig(callback){
 }
 
 function saveConfig(callback){
-    fs.writeFile('config.json', JSON.stringify(config), function (err) {
+    fs.writeFile('test.json', JSON.stringify(config), function (err) {
   if (err) throw err;
   console.log('It\'s saved!');
   callback(callback(0));
@@ -168,7 +168,7 @@ rl.on('line', function(line) {
 // '169.254.13.106'
 function connect(){
     //config.remotePort = port;
-    console.log("Trying to connect to " +config.remotePort + ":" + config.REMOTE);
+    console.log("Trying to connect to " + config.remotePort + ":" + config.REMOTE);
     client.connect(config.remotePort, config.REMOTE, function(){ // ConnectionListener
         console.log('Connected to server');
         config.connected = true;
