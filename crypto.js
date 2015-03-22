@@ -9,31 +9,16 @@ module.exports = {
 // Nodejs encryption with CTR
 var crypto = require('crypto'),
     algorithm = 'aes-256-ctr',   
-    password = 'd6F3Efeq',
-    config = {
-  "serverRunning": false,
-  "connected": false,
-  "remotePort": "4321",
-  "localPort": "1234",
-  "name": "OHAI",
-  "HOST": "169.254.193.97",
-  "REMOTE": "169.254.13.106"
-}
+    password = 'd6F3Efeq'; // Defaults if no password is given 
 
-function getPassword(){
-  //return Kas for A, Na 
-  //return Kbs for B, Nb
-  //return Kab for A and B
-}
-
-function encrypt(text){
+function encrypt(text, password, callback){
   var cipher = crypto.createCipher(algorithm,password)
   var crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
-  return crypted;
+  callback(crypted);
 }
- 
-function decrypt(text){
+
+function decrypt(text, password){
   var decipher = crypto.createDecipher(algorithm,password)
   var dec = decipher.update(text,'hex','utf8')
   dec += decipher.final('utf8');
@@ -48,24 +33,8 @@ function getNonce(callback){
   });
 }
 
-function print(){
-  console.log(getNonce(startProtocol, function(callback){
-    console.log('inni print, hva skjer?');
-    callback();
-  }) + ', hvordan går det?');  
-}
-
-// print();
-
-
 function validateNonce(nonce){
   if(config.nonce == nonce){
     console.log('true');
   }
 }
-
-// validateNonce();
-
- 
-//====== Encryption and decryption ======//
-

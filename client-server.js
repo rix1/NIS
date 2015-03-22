@@ -140,7 +140,7 @@ client.connect = function(port, address, callback){
 
 
 function connect(){
-    logD(1,"Trying to connect to " + config.REMOTE.port + ":" + config.REMOTE.address);
+    logD(1,"Trying to connect to " + config.REMOTE.address + ":" + config.REMOTE.port);
     client.connect(config.REMOTE.port, config.REMOTE.address, function(){
         logD(1,'Connected to server');
 
@@ -154,16 +154,23 @@ function connect(){
             // Hvis du har to ting som skal gjøres. 
             // Det du vil at skal skje sist 
             // Da kaller du en funksjon som gjør det første som skal gjøres, med ddet siste som skal gjøres som et argument.
-
-
+            
             crypto.getNonce(function(nonce){
-                var msg = {
-                    "sourceAddress" : config.HOST.address,
-                    "destinationAddress" : config.REMOTE.address,
-                    "nonceA" : nonce
+
+                if(DEBUG){
+                    var msg = {
+                        "source": {"address": "127.9.9.9", "nonce": nonce},
+                        "destination": {"address": "127.0.0.1", "nonce": ""}
+                    }                    
+                }else{
+                    var msg = {
+                        "source": {"address": config.HOST.address, "nonce": nonce},
+                        "destination": {"address": config.REMOTE.address, "nonce": ""}
+                    }
                 }
                 config.nonce = nonce;
-                logD(2, msg);
+                logD(2, "Sending FIRST message to other client");
+                logD(2, JSON.stringify(msg));        
                 client.write(JSON.stringify(msg));
             });
 
@@ -226,9 +233,11 @@ var server = net.createServer(function(client){
 
     client.on('data', function(data){     
         if(!config.secureConnection){
+            client.write("Initiating secure protocol...");
             // This is probably the first message - better check with auth-server if party is recognized
             var parsed = JSON.parse(data);
-            logD(2, parsed.nonce);
+            logD(2, "Message from other client: " + data);
+            logD(2, "Redirecting message to auth server...");
 
             // SPAWN NEW PROCESS AND REDIRECT 
             var authClient = new net.Socket();
@@ -236,24 +245,23 @@ var server = net.createServer(function(client){
                 logD(2, 'Connected to Auth Server');
 
                 crypto.getNonce(function(nonce){
-                    parsed.nonceB = nonce;
+                    parsed.destination.nonce = nonce;
                     config.nonce = nonce;
-                    logD(2, "NnonceB generated:\n " + parsed);
-                    authClient.write(JSON.stringify(parsed));
+                    var send = JSON.stringify(parsed);
+                    logD(2, "NonceB generated. Sending the following message to auth server:\n" + send);
+                    authClient.write(send);
                 })
             });
 
             authClient.on('data', function(data){
-                logD(2, "AUTHSERVER: " + data);
-            })
-
-
+                logD(2, "AUTHSERVER responds: " + data);
+            });
 
         }else {
             logD(2, "Cipher: " + data);
-            logD(4,crypto.decrypt(data.toString()));    
+            logD(4, data); // TODO: DECRYPT MESSAGES    
         }
-    })
+    });
 
     client.on('end', function(){
         config.clientConnection = false;
@@ -281,7 +289,6 @@ function startServer(){
             logD(2,'Server running on ' + server.address().address + ":" + server.address().port);
         }
         rl.prompt(true);
-
     });
 }
 
