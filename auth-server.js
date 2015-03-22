@@ -2,17 +2,17 @@ var net = require('net');
 var os = require('os');
 
 var acceptedHosts = [{
-	name: 'test',
-	address: '::ffff:127.0.0.1',
-	port: '9999'
+	"name": 'test',
+	"address": '127.0.0.10',
+	"port": '9999'
 },{ 
-	name: 'rikard',
-	address: '169.254.254.185',
-	port: '1234'
+	"name": 'Alice',
+	"address": '127.0.0.11',
+	"KEY_A": "Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n"
 },{
-	name: 'siri',
-	address: '169.254.13.106',
-	port: '4321'
+	"name": 'Bob',
+	"address": '::ffff:127.0.0.1',
+	"KEY_B": "GfYb$cP6ZXkyL[RLnDLU4Rq2;>8nq;}Yv7C8gxZBM)RwhZ9KDE"
 }];
 
 // Create lookup object
@@ -21,18 +21,15 @@ for (var i = 0; i < acceptedHosts.length; i++){
 	lookup[acceptedHosts[i].address] = acceptedHosts[i];
 }
 
-
 var server = net.createServer(function(client){
 	console.log('Request from: ' + client.address().address);
-
-	console.log(client.address());
 
 	if(typeof lookup[client.address().address] === 'undefined'){
 		console.log("not a recognized client... Ending connection");
 		client.end();
 	}else{
 		console.log('Recognized client: ' + lookup[client.address().address].name);
-		client.write('Welcome to very secure chat server');
+		client.write('*in russian accent* Welcome to very secure chat server, my name is Boris');
 	}
 
 	client.on('end', function(){
@@ -40,8 +37,8 @@ var server = net.createServer(function(client){
 	});
 
 	client.on('data', function(data){
-		console.log(data.toString());
-		client.write('Hei, jeg har det bra. Jeg er ikke robot.');
+		var msg = JSON.parse(data);
+		console.log(msg.userA.nonce);
 	});
 });
 

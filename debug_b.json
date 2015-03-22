@@ -5,5 +5,6 @@
   "localPort": "1234",
   "name": "Bob",
   "HOST": "127.0.0.1",
-  "REMOTE": "127.0.0.1"
+  "REMOTE": "127.0.0.1",
+  "KEY_B": "GfYb$cP6ZXkyL[RLnDLU4Rq2;>8nq;}Yv7C8gxZBM)RwhZ9KDE"
 }

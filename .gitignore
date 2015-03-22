@@ -1,6 +1,9 @@
 # Created by https://www.gitignore.io
 
 config_local.json
+config.json
+
+test/
 
 ### Node ###
 # Logs

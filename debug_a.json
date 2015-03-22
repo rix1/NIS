@@ -1,9 +1,1 @@
-{
-  "serverRunning": false,
-  "connected": false,
-  "remotePort": "1234",
-  "localPort": "4321",
-  "name": "Alice",
-  "HOST": "127.0.0.1",
-  "REMOTE": "127.0.0.1"
-}
+{"serverRunning":false,"connected":false,"remotePort":"1234","localPort":"4321","name":"Alice","HOST":"127.0.0.1","REMOTE":"127.0.0.1"}
