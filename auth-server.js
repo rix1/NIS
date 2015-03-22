@@ -25,7 +25,8 @@ for (var i = 0; i < acceptedHosts.length; i++){
 var server = net.createServer(function(client){
 	console.log('Request from: ' + client.address().address);
 
-	client.write('*in russian accent* Welcome to very secure chat server, my name is Boris.');
+	var welcome = { "status": "100", "response": "*in russian accent* Welcome to very secure chat server, my name is Boris."}
+	client.write(JSON.stringify(welcome));
 
 	client.on('end', function(){
 		console.log(client.address().address + ' disconnected.');
@@ -44,7 +45,9 @@ var server = net.createServer(function(client){
 			console.log("A: " + lookup[msg.source.address]);
 			console.log("B: " + lookup[msg.destination.address]);
 			console.log("not a recognized client... Ending connection");
-			client.write('ERROR: Addresses not known'); // For security reasons, do not specify which address is known.
+
+			var err = { "status": "400", "response": "ERROR: Address not known"};
+			client.write(JSON.stringify(err)); // For security reasons, do not specify which address is known.
 			client.end();
 		}else{
 			// Create two packages, encrypt them separately and send them back.
@@ -60,8 +63,9 @@ var server = net.createServer(function(client){
 
 				encryptFields(source, destination, function(msg){
 					console.log("Fields encrypted... Returning to client");
+					msg.status = "200";
 					client.write(JSON.stringify(msg));
-					// console.log(msg);
+					console.log("Encrypted message: " + JSON.stringify(msg));
 				})
 			});
 		}
@@ -71,8 +75,8 @@ var server = net.createServer(function(client){
 function encryptFields(source, dest, callback){
 	var msg = { source: {}, destination: {}};
 	console.log("KEYS");
-	console.log(lookup[source.address].KEY);
-	console.log(lookup[dest.address].KEY);
+	console.log("A: " + lookup[source.address].KEY);
+	console.log("B: " + lookup[dest.address].KEY);
 
 	crypto.encrypt(JSON.stringify(source), lookup[source.address].KEY, function(cipherS){
 		msg.source = cipherS;

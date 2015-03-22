@@ -101,9 +101,12 @@ rl.on('line', function(line) {
             startServer();
             break;
         }
-        if(config.connected){
-            client.write(crypto.encrypt(line));
+        if(config.connected && config.clientConnection && config.secureConnection){
             logD(3,line);
+            crypto.encrypt(line, config.sharedKey, function(cipher){
+                client.write(cipher);
+                logD(2, "Cipher text: " + cipher);
+            });
             break;
         }else{
             logD(1,'Echo aka you are offline: `' + line.trim() + '`');
@@ -113,6 +116,10 @@ rl.on('line', function(line) {
 });
 
 rl.on('close', function() {
+    config.connected = false,
+    config.clientConnection = false,
+    config.secureConnection = false,
+
     disconnect();
     stopServer();
     saveConfig(process.exit);
@@ -123,64 +130,39 @@ rl.on('close', function() {
 
 // ============= CLIENT CODE ============= //
 
-// How does the client.connect function (most likely) look like?
-
-/*
-var client;
-
-client.connect = function(port, address, callback){
-    
-    // Do something with port+address(callback){
-        
-        callback();
-    }
-}
-
-*/
-
-
-function connect(){
+function connect(callback){
     logD(1,"Trying to connect to " + config.REMOTE.address + ":" + config.REMOTE.port);
     client.connect(config.REMOTE.port, config.REMOTE.address, function(){
         logD(1,'Connected to server');
 
-        if(!config.clientConnection){ // Means no client is connected to you
-            // This is the first message. Send nonces.
-            logD(2, "This is the first connection and the first message");
+        if(!config.connected){ // Means you are not connected to anyone
 
-            // The goal now is construct a message with thee parts and then send it.
-            // The sending should therefore be the last thing that happens
+            if(!config.clientConnection){ // Means that no one is connected to you and you are the first one to make a connection
 
-            // Hvis du har to ting som skal gjøres. 
-            // Det du vil at skal skje sist 
-            // Da kaller du en funksjon som gjør det første som skal gjøres, med ddet siste som skal gjøres som et argument.
-            
-            crypto.getNonce(function(nonce){
+                logD(2, "This is the first connection and the first message");
+                crypto.getNonce(function(nonce){
 
-                if(DEBUG){
-                    var msg = {
-                        "source": {"address": "127.9.9.9", "nonce": nonce},
-                        "destination": {"address": "127.0.0.1", "nonce": ""}
-                    }                    
-                }else{
-                    var msg = {
-                        "source": {"address": config.HOST.address, "nonce": nonce},
-                        "destination": {"address": config.REMOTE.address, "nonce": ""}
+                    if(DEBUG){
+                        var msg = {
+                            "source": {"address": "127.9.9.9", "nonce": nonce},
+                            "destination": {"address": "127.0.0.1", "nonce": ""}
+                        }                    
+                    }else{
+                        var msg = {
+                            "source": {"address": config.HOST.address, "nonce": nonce},
+                            "destination": {"address": config.REMOTE.address, "nonce": ""}
+                        }
                     }
-                }
-                config.nonce = nonce;
-                logD(2, "Sending FIRST message to other client");
-                logD(2, JSON.stringify(msg));        
-                client.write(JSON.stringify(msg));
-            });
-
-        }else{
-            logD(2, "Someone is already connected to you. You should send them the shared key");
-            // If connected to, this is an automatic call made from the forwarding function
-            // Foreward message from server
+                    config.nonce = nonce;
+                    logD(2, "Sending FIRST message to other client");
+                    logD(2, JSON.stringify(msg));        
+                    client.write(JSON.stringify(msg));
+                });
+            }else{
+                logD(2, "Someone is already connected to you. You should send them the shared key");
+                callback();
+            }
         }
-
-
         config.connected = true;
     });
 }
@@ -206,7 +188,14 @@ client.on('close', function(){
 function disconnect(){
     logD(1,"Disconnected from remote client");
     config.connected = false;
+    config.secureConnection = false;
     client.end();
+}
+
+function connectAndWrite(data){
+    connect(function(){ // Connected
+        client.write(data);
+    });
 }
 
 // ============= SERVER CODE ============= //
@@ -214,32 +203,30 @@ function disconnect(){
 var server = net.createServer(function(client){
     logD(1,'SERVER > ' + client.address().address + ' is trying to connect');
 
-    if(config.connected == false){
+    // if(!config.connected){
         // This is the responese to the first message in the protocol
-        client.write(config.name + " > Hi! You just connected to me. Am I connected to you: " + config.connected );
-        client.write(config.name + " > Just hang on, I'll verify you and get a shared key just now-now");
+        // client.write(config.name + " > Hi! You just connected to me. Am I connected to you: " + config.connected );
+        // client.write(config.name + " > Just hang on, I'll verify you and get a shared key just now-now");
         config.clientConnection = true; // A client is now connected to you
         
         // TODO: Redirect message to auth server
 
         // Auth server responds
-        if(true){
-
-        }
-    }else{
+    // }else{
         // This is later messages in the protocol
-    }
+    // }
 
 
     client.on('data', function(data){     
-        if(!config.secureConnection){
+        if(config.clientConnection && !config.connected){ // If someone is connected to this and this is not connected to anything - send msg to auth server.
             client.write("Initiating secure protocol...");
             // This is probably the first message - better check with auth-server if party is recognized
             var parsed = JSON.parse(data);
             logD(2, "Message from other client: " + data);
             logD(2, "Redirecting message to auth server...");
 
-            // SPAWN NEW PROCESS AND REDIRECT 
+
+            // SPAWN NEW CONNECTION TO AUTH SERVER
             var authClient = new net.Socket();
             authClient.connect(config.authServer.port, config.authServer.address, function(){
                 logD(2, 'Connected to Auth Server');
@@ -254,20 +241,74 @@ var server = net.createServer(function(client){
             });
 
             authClient.on('data', function(data){
+                var response = JSON.parse(data);
                 logD(2, "AUTHSERVER responds: " + data);
+                if(response.status < 400){
+                    logD(2, "Response from auth server succsessfull");
+                    if(response.status == 200){
+                        decryptAndVerify(response.destination, function(verified){
+                            if(verified){
+                                config.secureConnection = true;
+                                connectAndWrite(response.source); // Connect and write data back to Alice        
+                        }else{
+                            logD(2, "FATAL: Nonce or decryption cannot be completed.");
+                            // TODO: Something.
+                        }
+                    })
+                        authClient.end();
+                    }
+                }else{
+                    logD(1, response.status + ": " + response.response);
+                }
             });
-
-        }else {
+            
+        }else if(config.clientConnection && config.connected && !config.secureConnection) { // You receive data from the client
+            logD(2, "Cipher: " + data); 
+            var test2 = data + '';
+            decryptAndVerify(test2, function(verified){
+                if(verified){
+                    config.secureConnection = true;
+                    logD(1, "Secure connection established");
+                }else{
+                    logD(2, "FATAL: Nonce or decryption cannot be completed.");
+                }
+            });
+        }else if(config.secureConnection){
             logD(2, "Cipher: " + data);
-            logD(4, data); // TODO: DECRYPT MESSAGES    
+            crypto.decrypt(data + '', config.sharedKey, function(plain){
+                logD(4, plain);
+            })
+        }
+        else{
+            logD(2, "WHAAT - U NOT SUPPOSED TO AVOID EVERY TEST");
         }
     });
 
-    client.on('end', function(){
-        config.clientConnection = false;
-        logD(1,' wops, ' + client.address().address + ' has disappeared');
-    });
+client.on('end', function(){
+    config.clientConnection = false;
+    logD(1,' wops, ' + client.address().address + ' has disappeared');
 });
+});
+
+function decryptAndVerify(cipher, callback){
+    var plaintext;
+
+    crypto.decrypt(cipher, config.secretKey, function(dec){
+
+        plaintext = JSON.parse(dec);
+
+        // plaintext = JSON.parse(dec);
+        if(plaintext.nonce == config.nonce){
+            config.sharedKey = plaintext.sharedKey;
+            callback(true);
+        }else {
+            logD(2, "FATAL: Nonces does not match:");
+            logD(2, plaintext.nonce);
+            logD(2, config.nonce);
+            callback(false);
+        }
+    });
+}
 
 server.on('close', function(){
     logD(2, "Close event emitted.");

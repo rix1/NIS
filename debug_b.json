@@ -4,9 +4,9 @@
   "clientConnection": false,
   "secureConnection": false,
   "name": "Bob",
-  "secretKey": "Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n",
-  "sharedKey": "",
-  "nonce": "18901261727d596133db6e3ac477846abab5e9460eac079c7ecd95aa5cc6062bf53cce29c4133840d4850e8e725871bf",
+  "secretKey": "GfYb$cP6ZXkyL[RLnDLU4Rq2;>8nq;}Yv7C8gxZBM)RwhZ9KDE",
+  "sharedKey": "d045c259db81814928afef6451847aaf643a4492f040d5d0618f644094c9981e2ce84cadfb1468af4a48a5c78c2a733a",
+  "nonce": "5dc8be30aee3d2f3801988084e104dcc253d6d91000d61e8cc67328a7b6be50f4a8744b6fc34648275394e31270f6997",
   "HOST": {
     "address": "127.0.0.1",
     "port": "1234"
