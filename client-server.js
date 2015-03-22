@@ -105,7 +105,7 @@ rl.on('line', function(line) {
             logD(3,line);
             crypto.encrypt(line, config.sharedKey, function(cipher){
                 client.write(cipher);
-                logD(2, "Cipher text: " + cipher);
+                logD(2, "Sent cipher text: " + cipher);
             });
             break;
         }else{
@@ -250,8 +250,8 @@ var server = net.createServer(function(client){
                             if(verified){
                                 config.secureConnection = true;
                                 connectAndWrite(response.source); // Connect and write data back to Alice        
-                        }else{
-                            logD(2, "FATAL: Nonce or decryption cannot be completed.");
+                            }else{
+                                logD(2, "FATAL: Nonce or decryption cannot be completed.");
                             // TODO: Something.
                         }
                     })
@@ -261,9 +261,9 @@ var server = net.createServer(function(client){
                     logD(1, response.status + ": " + response.response);
                 }
             });
-            
+
         }else if(config.clientConnection && config.connected && !config.secureConnection) { // You receive data from the client
-            logD(2, "Cipher: " + data); 
+            logD(2, "Received cipher: " + data); 
             var test2 = data + '';
             decryptAndVerify(test2, function(verified){
                 if(verified){
@@ -274,10 +274,11 @@ var server = net.createServer(function(client){
                 }
             });
         }else if(config.secureConnection){
-            logD(2, "Cipher: " + data);
+            logD(2, "Received cipher: " + data);
+            
             crypto.decrypt(data + '', config.sharedKey, function(plain){
                 logD(4, plain);
-            })
+            });
         }
         else{
             logD(2, "WHAAT - U NOT SUPPOSED TO AVOID EVERY TEST");
@@ -286,6 +287,7 @@ var server = net.createServer(function(client){
 
 client.on('end', function(){
     config.clientConnection = false;
+    config.secureConnection = false;
     logD(1,' wops, ' + client.address().address + ' has disappeared');
 });
 });
