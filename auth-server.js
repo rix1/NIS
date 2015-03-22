@@ -3,11 +3,11 @@ var os = require('os');
 
 var acceptedHosts = [{
 	"name": 'test',
-	"address": '127.0.0.10',
+	"address": '::ffff:127.0.0.10',
 	"port": '9999'
 },{ 
 	"name": 'Alice',
-	"address": '127.0.0.11',
+	"address": '::ffff:127.0.0.11',
 	"KEY_A": "Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n"
 },{
 	"name": 'Bob',
@@ -38,7 +38,7 @@ var server = net.createServer(function(client){
 
 	client.on('data', function(data){
 		var msg = JSON.parse(data);
-		console.log(msg.userA.nonce);
+		console.log(msg);
 	});
 });
 

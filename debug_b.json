@@ -1,12 +1,1 @@
-{
-  "serverRunning": false,
-  "connected": false,
-  "clientConnection": false,
-  "secureConnection": false,
-  "remotePort": "4321",
-  "localPort": "1234",
-  "name": "Bob",
-  "HOST": "127.0.0.1",
-  "REMOTE": "127.0.0.1",
-  "KEY_B": "GfYb$cP6ZXkyL[RLnDLU4Rq2;>8nq;}Yv7C8gxZBM)RwhZ9KDE"
-}
+{"serverRunning":false,"connected":false,"clientConnection":true,"secureConnection":false,"name":"Bob","secretKey":"Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n","sharedKey":"","nonce":"01f4ac7a36323cc7e25c36fefd3f5de7fc242f7bd83a949dd40993decbe2590c13f6664966dff17cc37202ba79e49935","HOST":{"address":"127.0.0.1","port":"1234"},"REMOTE":{"address":"127.0.0.1","port":"4321"},"authServer":{"address":"127.0.0.1","port":"9999"}}

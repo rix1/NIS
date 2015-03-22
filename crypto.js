@@ -2,7 +2,8 @@
 
 module.exports = {
   encrypt: encrypt,
-  decrypt: decrypt
+  decrypt: decrypt,
+  getNonce: getNonce,
 }
 
 // Nodejs encryption with CTR
@@ -43,20 +44,8 @@ function getNonce(callback){
   crypto.randomBytes(48, function(ex, buf) {
     var nonce = buf.toString('hex');
     // console.log('inside getNonce ' + callback(nonce));
-    return callback(nonce) + ' gunnar';
+    callback(nonce);
   });
-}
-
-function startProtocol(nonce){
-  var msg = {
-    "localAddress": config.HOST, 
-    "remoteAddress": config.REMOTE,
-    "nonce": nonce 
-  }
-  config.nonce = nonce;
-  console.log('ooonnce: ' + nonce);
-
-  return 'hei';
 }
 
 function print(){

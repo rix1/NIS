@@ -123,19 +123,57 @@ rl.on('close', function() {
 
 // ============= CLIENT CODE ============= //
 
+// How does the client.connect function (most likely) look like?
+
+/*
+var client;
+
+client.connect = function(port, address, callback){
+    
+    // Do something with port+address(callback){
+        
+        callback();
+    }
+}
+
+*/
+
+
 function connect(){
-    logD(1,"Trying to connect to " + config.remotePort + ":" + config.REMOTE);
-    client.connect(config.remotePort, config.REMOTE, function(){
+    logD(1,"Trying to connect to " + config.REMOTE.port + ":" + config.REMOTE.address);
+    client.connect(config.REMOTE.port, config.REMOTE.address, function(){
         logD(1,'Connected to server');
 
         if(!config.clientConnection){ // Means no client is connected to you
             // This is the first message. Send nonces.
             logD(2, "This is the first connection and the first message");
+
+            // The goal now is construct a message with thee parts and then send it.
+            // The sending should therefore be the last thing that happens
+
+            // Hvis du har to ting som skal gjøres. 
+            // Det du vil at skal skje sist 
+            // Da kaller du en funksjon som gjør det første som skal gjøres, med ddet siste som skal gjøres som et argument.
+
+
+            crypto.getNonce(function(nonce){
+                var msg = {
+                    "sourceAddress" : config.HOST.address,
+                    "destinationAddress" : config.REMOTE.address,
+                    "nonceA" : nonce
+                }
+                config.nonce = nonce;
+                logD(2, msg);
+                client.write(JSON.stringify(msg));
+            });
+
         }else{
             logD(2, "Someone is already connected to you. You should send them the shared key");
             // If connected to, this is an automatic call made from the forwarding function
             // Foreward message from server
         }
+
+
         config.connected = true;
     });
 }
@@ -173,7 +211,6 @@ var server = net.createServer(function(client){
         // This is the responese to the first message in the protocol
         client.write(config.name + " > Hi! You just connected to me. Am I connected to you: " + config.connected );
         client.write(config.name + " > Just hang on, I'll verify you and get a shared key just now-now");
-
         config.clientConnection = true; // A client is now connected to you
         
         // TODO: Redirect message to auth server
@@ -187,9 +224,35 @@ var server = net.createServer(function(client){
     }
 
 
-    client.on('data', function(data){
-        logD(2, "Cipher: " + data);
-        logD(4,crypto.decrypt(data.toString()));
+    client.on('data', function(data){     
+        if(!config.secureConnection){
+            // This is probably the first message - better check with auth-server if party is recognized
+            var parsed = JSON.parse(data);
+            logD(2, parsed.nonce);
+
+            // SPAWN NEW PROCESS AND REDIRECT 
+            var authClient = new net.Socket();
+            authClient.connect(config.authServer.port, config.authServer.address, function(){
+                logD(2, 'Connected to Auth Server');
+
+                crypto.getNonce(function(nonce){
+                    parsed.nonceB = nonce;
+                    config.nonce = nonce;
+                    logD(2, "NnonceB generated:\n " + parsed);
+                    authClient.write(JSON.stringify(parsed));
+                })
+            });
+
+            authClient.on('data', function(data){
+                logD(2, "AUTHSERVER: " + data);
+            })
+
+
+
+        }else {
+            logD(2, "Cipher: " + data);
+            logD(4,crypto.decrypt(data.toString()));    
+        }
     })
 
     client.on('end', function(){
@@ -210,10 +273,10 @@ function stopServer(){
 
 function startServer(){
     config.serverRunning = true;
-    server.listen(config.localPort, config.HOST, function(){ // Viktig at denne porten er forskjellig!
+    server.listen(config.HOST.port, config.HOST.address, function(){ // Viktig at denne porten er forskjellig!
         if(server.address().address == '::'){
             logD(2,'Hostname: ' + os.hostname());
-            logD(2,'Server running on ' + config.HOST + ":" + server.address().port);
+            logD(2,'Server running on ' + config.HOST.address + ":" + server.address().port);
         }else {
             logD(2,'Server running on ' + server.address().address + ":" + server.address().port);
         }
