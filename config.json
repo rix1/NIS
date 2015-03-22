@@ -1,6 +1,7 @@
 {
   "serverRunning": false,
   "connected": false,
+  "secureConnection": false,
   "remotePort": "4321",
   "localPort": "1234",
   "name": "OHAI",

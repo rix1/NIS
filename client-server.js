@@ -103,10 +103,10 @@ rl.on('line', function(line) {
         }
         if(config.connected){
             client.write(crypto.encrypt(line));
-            rl.prompt(true);
+            logD(3,line);
             break;
         }else{
-            console.log('Echo aka you are offline: `' + line.trim() + '`');
+            logD(1,'Echo aka you are offline: `' + line.trim() + '`');
         }break;
     }
     rl.prompt(true);
@@ -124,62 +124,78 @@ rl.on('close', function() {
 // ============= CLIENT CODE ============= //
 
 function connect(){
-    console.log("Trying to connect to " + config.remotePort + ":" + config.REMOTE);
+    logD(1,"Trying to connect to " + config.remotePort + ":" + config.REMOTE);
     client.connect(config.remotePort, config.REMOTE, function(){
-        console.log('Connected to server');
+        logD(1,'Connected to server');
+
+        if(!config.clientConnection){ // Means no client is connected to you
+            // This is the first message. Send nonces.
+            logD(2, "This is the first connection and the first message");
+        }else{
+            logD(2, "Someone is already connected to you. You should send them the shared key");
+            // If connected to, this is an automatic call made from the forwarding function
+            // Foreward message from server
+        }
         config.connected = true;
-        rl.prompt(true);
     });
 }
 
 client.on('error', function(e){
     if(e.code == 'ECONNREFUSED'){
-        console.log("Cannot connect to server: " + e.code);
-        rl.prompt();
+        logD(1, "Cannot connect to server: " + e.code);
     }
 });
 
 client.on('data', function(data){
-    console.log('Server> ' + data);
-    // rl.prompt();
+    logD(4, data);
 });
 
 client.on('close', function(){
     if(config.connected){
-        console.log("woops, seems we lost connection...");
+        logD(1,"woops, seems we lost connection...");
         rl.prompt(true);
     }
     config.connected = false;
-    // console.log('Disconnected from ' + client.remoteAddress);
 });
 
 function disconnect(){
-    console.log("Disconnected from remote client");
+    logD(1,"Disconnected from remote client");
     config.connected = false;
     client.end();
 }
 
-
-
-
 // ============= SERVER CODE ============= //
 
 var server = net.createServer(function(client){
-    console.log('SERVER > ' + client.address().address + ' is connected');
-    rl.prompt(true);
-    client.on('end', function(){
-        console.log('SERVER > wops, ' + client.address().address + ' has disappeared');
-    });
+    logD(1,'SERVER > ' + client.address().address + ' is trying to connect');
 
-    client.write(" > " + config.name + ": Hi! We are connected!" );
-    rl.write('');
+    if(config.connected == false){
+        // This is the responese to the first message in the protocol
+        client.write(config.name + " > Hi! You just connected to me. Am I connected to you: " + config.connected );
+        client.write(config.name + " > Just hang on, I'll verify you and get a shared key just now-now");
+
+        config.clientConnection = true; // A client is now connected to you
+        
+        // TODO: Redirect message to auth server
+
+        // Auth server responds
+        if(true){
+
+        }
+    }else{
+        // This is later messages in the protocol
+    }
+
 
     client.on('data', function(data){
         logD(2, "Cipher: " + data);
-        rl.write(''); // Hack to refresh 
-        console.log(crypto.decrypt(data.toString()));
-        rl.prompt(true);
+        logD(4,crypto.decrypt(data.toString()));
     })
+
+    client.on('end', function(){
+        config.clientConnection = false;
+        logD(1,' wops, ' + client.address().address + ' has disappeared');
+    });
 });
 
 server.on('close', function(){
@@ -187,7 +203,7 @@ server.on('close', function(){
 })
 
 function stopServer(){
-    console.log("Stopping server...");
+    logD(1,"Stopping server...");
     config.serverRunning = false;
     server.close();
 }
@@ -196,10 +212,10 @@ function startServer(){
     config.serverRunning = true;
     server.listen(config.localPort, config.HOST, function(){ // Viktig at denne porten er forskjellig!
         if(server.address().address == '::'){
-            console.log('Hostname: ' + os.hostname());
-            console.log('Server running on ' + config.HOST + ":" + server.address().port);
+            logD(2,'Hostname: ' + os.hostname());
+            logD(2,'Server running on ' + config.HOST + ":" + server.address().port);
         }else {
-            console.log('Server running on ' + server.address().address + ":" + server.address().port);
+            logD(2,'Server running on ' + server.address().address + ":" + server.address().port);
         }
         rl.prompt(true);
 
@@ -227,10 +243,15 @@ function logD(code, string){
     if(code == 1){
         console.log(">> " + string);
     }
-
-    if(code == 2 && DEBUG){
+    else if(code == 2 && DEBUG){
         console.log("APP: " + string);
+    }else if(code == 3){
+        console.log(config.name + '> ' + string);
+    }else if(code == 4){
+        console.log('' + string);
     }
+    rl.prompt(true);
+    rl.write('');
 }
 
 function editPort(flag, command){

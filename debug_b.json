@@ -1,6 +1,8 @@
 {
   "serverRunning": false,
   "connected": false,
+  "clientConnection": false,
+  "secureConnection": false,
   "remotePort": "4321",
   "localPort": "1234",
   "name": "Bob",

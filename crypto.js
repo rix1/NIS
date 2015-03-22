@@ -66,7 +66,7 @@ function print(){
   }) + ', hvordan går det?');  
 }
 
-print();
+// print();
 
 
 function validateNonce(nonce){
@@ -75,7 +75,7 @@ function validateNonce(nonce){
   }
 }
 
-validateNonce();
+// validateNonce();
 
  
 //====== Encryption and decryption ======//
