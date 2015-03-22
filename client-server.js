@@ -11,7 +11,7 @@ var path = require('path');
 var configPath;
 var config;
 
-var DEBUG = true;
+var DEBUG = false;
 var re = /\d{4}/ // 4 digit regex matching
 var client = new net.Socket();
 var started = false;
@@ -169,7 +169,7 @@ function connect(callback){
 
 client.on('error', function(e){
     if(e.code == 'ECONNREFUSED'){
-        logD(1, "Cannot connect to server: " + e.code);
+        logD(1, "Cannot connect to server: " + e);
     }
 });
 
@@ -188,6 +188,7 @@ client.on('close', function(){
 function disconnect(){
     logD(1,"Disconnected from remote client");
     config.connected = false;
+    config.clientConnection = false;
     config.secureConnection = false;
     client.end();
 }
@@ -275,7 +276,7 @@ var server = net.createServer(function(client){
             });
         }else if(config.secureConnection){
             logD(2, "Received cipher: " + data);
-            
+
             crypto.decrypt(data + '', config.sharedKey, function(plain){
                 logD(4, plain);
             });

@@ -1,1 +1,22 @@
-{"serverRunning":false,"connected":false,"clientConnection":false,"secureConnection":false,"name":"Alice","secretKey":"Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n","sharedKey":"f7d047cf1232411e6ab440306842c5f16a30b8b6f0fa0c998d185b66e29f9d5ab6a91108373935fd8e306979e3b43ff0","nonce":"57dac6601b9b8ae104ce9191cd4cfd185ef90bee627807945ee5da93c501dd0a415a3f2f2099798539d88ab88950ffc7","HOST":{"address":"127.0.0.1","port":"4321"},"REMOTE":{"address":"127.0.0.1","port":"1234"},"authServer":{"address":"127.0.0.1","port":"9999"}}
+{
+  "serverRunning": false,
+  "connected": false,
+  "clientConnection": false,
+  "secureConnection": false,
+  "name": "Alice",
+  "secretKey": "Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n",
+  "sharedKey": "f7d047cf1232411e6ab440306842c5f16a30b8b6f0fa0c998d185b66e29f9d5ab6a91108373935fd8e306979e3b43ff0",
+  "nonce": "57dac6601b9b8ae104ce9191cd4cfd185ef90bee627807945ee5da93c501dd0a415a3f2f2099798539d88ab88950ffc7",
+  "HOST": {
+    "address": "127.0.0.1",
+    "port": "4321"
+  },
+  "REMOTE": {
+    "address": "127.0.0.1",
+    "port": "1234"
+  },
+  "authServer": {
+    "address": "127.0.0.1",
+    "port": "9999"
+  }
+}

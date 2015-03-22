@@ -4,15 +4,15 @@ var crypto = require('./crypto');
 
 var acceptedHosts = [{
 	"name": 'test',
-	"address": '::ffff:127.0.0.10',
-	"KEY": "6WVcNcdU7nPke4WiXzfo86TVohnvhXoPKEL9x4ZEZPXaJucfG"
+	"address": '127.0.0.10',
+	"KEY": "fo86TVohnvhXoPKEL9x4ZEZPXaJucfG"
 },{ 
-	"name": 'Alice',
-	"address": '127.9.9.9',
+	"name": 'Rikard',
+	"address": '169.254.106.67',
 	"KEY": "Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n"
 },{
-	"name": 'Bob',
-	"address": '127.0.0.1',
+	"name": 'Siri',
+	"address": '169.254.13.106',
 	"KEY": "GfYb$cP6ZXkyL[RLnDLU4Rq2;>8nq;}Yv7C8gxZBM)RwhZ9KDE"
 }];
 
@@ -25,8 +25,8 @@ for (var i = 0; i < acceptedHosts.length; i++){
 var server = net.createServer(function(client){
 	console.log('Request from: ' + client.address().address);
 
-	var welcome = { "status": "100", "response": "*in russian accent* Welcome to very secure chat server, my name is Boris."}
-	client.write(JSON.stringify(welcome));
+	var welcome = { "status": "100", "response": "connected to auth server"}
+	// client.write(JSON.stringify(welcome));
 
 	client.on('end', function(){
 		console.log(client.address().address + ' disconnected.');
@@ -87,7 +87,7 @@ function encryptFields(source, dest, callback){
 	});
 }
 
-server.listen(9999, function(){
+server.listen(9999, '169.254.106.67', function(){
 	if(server.address().address == '::'){
 		console.log('Hostname: ' + os.hostname());
 		console.log('Server running on 127.0.0.1:' + server.address().port);
