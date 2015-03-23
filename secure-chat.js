@@ -378,6 +378,8 @@ var server = net.createServer(function(client){
                     logD(1, "Secure connection established");
                 }else{
                     logD(2, "FATAL: Nonce or decryption cannot be completed.");
+                    client.end();
+                    disconnect();   
                 }
             });
         }else if(config.secureConnection){
