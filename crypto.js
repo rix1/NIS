@@ -1,4 +1,16 @@
-//====== Encryption and decryption ======//
+
+
+/**
+ * Encryption and decryption
+ *
+ * Functions that are available to other classes:
+ * @type {{encrypt: encrypt, decrypt: decrypt, getNonce: getNonce, encryptFile: encryptFile, decryptFile: decryptFile}}
+ *
+ * Uses AES-256 Encryption
+ * Session key and nonces are genereated by random bytes
+ * See https://nodejs.org/api/crypto.html for details.
+ *
+ */
 
 module.exports = {
   encrypt: encrypt,
@@ -8,10 +20,9 @@ module.exports = {
   decryptFile: decryptFile
 }
 
-// Nodejs encryption with CTR
+// Define encryption/decryption
 var crypto = require('crypto'),
     algorithm = 'aes-256-ctr',   
-    password = 'd6F3Efeq'; // Defaults if no password is given 
     zlib = require('zlib'),
     fs = require('fs');
 
@@ -35,10 +46,6 @@ function encryptFile(file, password, callback){
   var encryptFile = crypto.createCipher(algorithm, password);
   var encryptedFile = read.pipe(zip).pipe(encryptFile);
   callback(encryptedFile);
-
-//  == testing ==
- // var write = fs.createWriteStream('encrypted_' + file);  
- // var encryptedFile = read.pipe(zip).pipe(encryptFile).pipe(write);
 }
 
 function decryptFile(file, password, callback){
@@ -49,27 +56,9 @@ function decryptFile(file, password, callback){
   callback(decryptedFile);
 }
 
-// //  == testing ==
-//  encryptFile('file.txt', password, function(file){
-//   console.log("encrypted: " +JSON.stringify(file));
-//   var decrypt = crypto.createDecipher(algorithm, password)
-//   var unzip = zlib.createGunzip();
-
-//   var sendEmulate = JSON.stringify(file);
-
-//   var receiveEmulate = JSON.parse(sendEmulate);
-//   var a = receiveEmulate.pipe(decrypt).pipe(unzip);
-
-//   console.log("Decrypted: " + JSON.stringify(a));
-
-
-//  });
-//  decryptFile('img.jpg');
-
 function getNonce(callback){
   crypto.randomBytes(48, function(ex, buf) {
     var nonce = buf.toString('hex');
-    // console.log('inside getNonce ' + callback(nonce));
     callback(nonce);
   });
 }

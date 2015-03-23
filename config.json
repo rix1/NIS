@@ -1,1 +1,22 @@
-{"serverRunning":false,"connected":false,"clientConnection":false,"secureConnection":false,"name":"Rikard","secretKey":"Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n","sharedKey":"f8a1a45e5eccbf7f7e0626ea9243dd1a805af5f82ce9c8ff01199182db5da2f92cb08405b5d301be8c62fef34b65bd35","nonce":"c64cf8195edbcbbd616e1040ed660c6732260f3ab4ee2eca99d86fc2b77dc39b17ea5c2a8253172618df44db852968c9","HOST":{"address":"169.254.106.67","port":"4321"},"REMOTE":{"address":"169.254.13.106","port":"1234"},"authServer":{"address":"169.254.106.67","port":"9999"}}
+{
+  "serverRunning": false,
+  "connected": false,
+  "clientConnection": false,
+  "secureConnection": false,
+  "name": "Rikard",
+  "secretKey": "Pke4TVohnvhXEL9x4ZEZPXaVcNcdUoPKWiXzfo86JucfG6W7n",
+  "sessionKey": "f8a1a45e5eccbf7f7e0626ea9243dd1a805af5f82ce9c8ff01199182db5da2f92cb08405b5d301be8c62fef34b65bd35",
+  "nonce": "c64cf8195edbcbbd616e1040ed660c6732260f3ab4ee2eca99d86fc2b77dc39b17ea5c2a8253172618df44db852968c9",
+  "HOST": {
+    "address": "169.254.106.67",
+    "port": "4321"
+  },
+  "REMOTE": {
+    "address": "169.254.13.106",
+    "port": "1234"
+  },
+  "authServer": {
+    "address": "169.254.106.67",
+    "port": "9999"
+  }
+}
